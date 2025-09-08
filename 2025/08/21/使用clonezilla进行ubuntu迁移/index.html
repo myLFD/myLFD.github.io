@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"github.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.24.1","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="参考文章地址 1。起因由于之前的ubuntu系统装在128G的老固态硬盘上，逐渐空间不够，故萌生更换硬盘的念头，又原谅我比较懒，源系统中设置了很多个性化设置，所以十分不愿重装系统，经多方搜寻，发现clonezilla十分好用，故记录并附上资源 2.步骤具体分为两步，使用clonezilla从资源盘对源系统进行封装，再将封装的镜像文件恢复到目标盘。 需要的条件：U盘一个（用于烧录clonezilla">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用clonezilla进行ubuntu迁移">
+<meta property="og:url" content="http://github.com/2025/08/21/%E4%BD%BF%E7%94%A8clonezilla%E8%BF%9B%E8%A1%8Cubuntu%E8%BF%81%E7%A7%BB/index.html">
+<meta property="og:site_name" content="blog of dz">
+<meta property="og:description" content="参考文章地址 1。起因由于之前的ubuntu系统装在128G的老固态硬盘上，逐渐空间不够，故萌生更换硬盘的念头，又原谅我比较懒，源系统中设置了很多个性化设置，所以十分不愿重装系统，经多方搜寻，发现clonezilla十分好用，故记录并附上资源 2.步骤具体分为两步，使用clonezilla从资源盘对源系统进行封装，再将封装的镜像文件恢复到目标盘。 需要的条件：U盘一个（用于烧录clonezilla">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-08-21T11:04:06.652Z">
+<meta property="article:modified_time" content="2025-08-21T11:04:06.652Z">
+<meta property="article:author" content="dz">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://github.com/2025/08/21/%E4%BD%BF%E7%94%A8clonezilla%E8%BF%9B%E8%A1%8Cubuntu%E8%BF%81%E7%A7%BB/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://github.com/2025/08/21/%E4%BD%BF%E7%94%A8clonezilla%E8%BF%9B%E8%A1%8Cubuntu%E8%BF%81%E7%A7%BB/","path":"2025/08/21/使用clonezilla进行ubuntu迁移/","title":"使用clonezilla进行ubuntu迁移"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>使用clonezilla进行ubuntu迁移 | blog of dz</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">blog of dz</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1%E3%80%82%E8%B5%B7%E5%9B%A0"><span class="nav-number">1.</span> <span class="nav-text">1。起因</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E6%AD%A5%E9%AA%A4"><span class="nav-number">2.</span> <span class="nav-text">2.步骤</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-0%E5%AE%89%E8%A3%85clonezilla"><span class="nav-number">2.1.</span> <span class="nav-text">2.0安装clonezilla</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1%E4%BB%8EU%E7%9B%98%E5%90%AF%E5%8A%A8clonezilla"><span class="nav-number">2.2.</span> <span class="nav-text">2.1从U盘启动clonezilla</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2%E4%BB%8E%E5%B0%81%E8%A3%85%E6%96%87%E4%BB%B6%E6%81%A2%E5%A4%8D%E7%B3%BB%E7%BB%9F%E5%88%B0%E7%9B%AE%E6%A0%87%E7%9B%98"><span class="nav-number">2.3.</span> <span class="nav-text">2.2从封装文件恢复系统到目标盘</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">dz</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">17</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://github.com/2025/08/21/%E4%BD%BF%E7%94%A8clonezilla%E8%BF%9B%E8%A1%8Cubuntu%E8%BF%81%E7%A7%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="dz">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="blog of dz">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="使用clonezilla进行ubuntu迁移 | blog of dz">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          使用clonezilla进行ubuntu迁移
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-08-21 19:04:06" itemprop="dateCreated datePublished" datetime="2025-08-21T19:04:06+08:00">2025-08-21</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/354584111">参考文章地址</a></p>
+<h2 id="1。起因"><a href="#1。起因" class="headerlink" title="1。起因"></a>1。起因</h2><p>由于之前的ubuntu系统装在128G的老固态硬盘上，逐渐空间不够，故萌生更换硬盘的念头，又原谅我比较懒，源系统中设置了很多个性化设置，所以十分不愿重装系统，经多方搜寻，发现clonezilla十分好用，故记录并附上资源</p>
+<h2 id="2-步骤"><a href="#2-步骤" class="headerlink" title="2.步骤"></a>2.步骤</h2><p>具体分为两步，使用clonezilla从资源盘对源系统进行封装，再将封装的镜像文件恢复到目标盘。</p>
+<p>需要的条件：<br>U盘一个（用于烧录clonezilla软件）</p>
+<p>源系统盘和目标盘</p>
+<p>ext4存储区域一块（这里说明一下，可以使用U盘，也可以划分磁盘的一块区域，但是文件格式必须为ext4，用来暂时存储封装的系统，本人因为电脑上还有一块专门存数据的机械硬盘，故划分100G。windows下可以使用diskgenius划分，可直接转换成ext4格式，直接用windows自带的磁盘管理器则不能）</p>
+<h3 id="2-0安装clonezilla"><a href="#2-0安装clonezilla" class="headerlink" title="2.0安装clonezilla"></a>2.0安装clonezilla</h3><p>官方提供两种下载方式，一种是iso，另一种是zip，推荐使用iso用ultraiso进行烧录，zip需要下载安装tuxboot，还需要安装一些依赖包，懒得搞了，没有ultraiso省心</p>
+<p><a target="_blank" rel="noopener" href="https://clonezilla.org/downloads.php">clonezilla下载地址</a></p>
+<p>烧录没什么好说的，按照教程直接点点点，便捷启动选择写入新的驱动器引导扇区，选择Syslinux</p>
+<h3 id="2-1从U盘启动clonezilla"><a href="#2-1从U盘启动clonezilla" class="headerlink" title="2.1从U盘启动clonezilla"></a>2.1从U盘启动clonezilla</h3><p>按照教程直接选择默认即可，封装后的系统会存储在上文提到的ext4存储区域</p>
+<h3 id="2-2从封装文件恢复系统到目标盘"><a href="#2-2从封装文件恢复系统到目标盘" class="headerlink" title="2.2从封装文件恢复系统到目标盘"></a>2.2从封装文件恢复系统到目标盘</h3><p>可按照教程一步一步来，但是在选择目的硬盘后，可以选择是否按照原系统分区还是按比例扩展分区，这个按比例扩展分区是扩展几个系统分区，交换分区swap和引导分区boot并不包含在内，由于我的目标盘较大，直接选择按比例扩展即可，不然ubuntu系统分区由于是连续的，部分分区无法扩展</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/08/21/%E5%B8%B8%E7%94%A8%E6%8C%87%E4%BB%A4-vim/" rel="next" title="常用指令—vim">
+                  常用指令—vim <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">dz</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>

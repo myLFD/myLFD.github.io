@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"github.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.24.1","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="1.硬件准备3A5000测试机，Radeon 520OEM显卡,串口用于连接3A5000测试机以及工作机（串口软件minicom或者picocom），HDMI线连接显卡和显示器（VGA线暂时不支持） 1234567891011loongson@loongson-pc:~$ lspci -v -s 06:00.006:00.0 VGA compatible controller: Advanced">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android在3A5000上启动图形栈说明">
+<meta property="og:url" content="http://github.com/2025/08/21/%E6%9C%89%E5%85%B3%E5%9C%A83A5000%E4%B8%8A%E5%90%AF%E5%8A%A8android%E5%9B%BE%E5%BD%A2%E6%A0%88%E7%9A%84%E5%87%A0%E7%82%B9%E8%AF%B4%E6%98%8E/index.html">
+<meta property="og:site_name" content="blog of dz">
+<meta property="og:description" content="1.硬件准备3A5000测试机，Radeon 520OEM显卡,串口用于连接3A5000测试机以及工作机（串口软件minicom或者picocom），HDMI线连接显卡和显示器（VGA线暂时不支持） 1234567891011loongson@loongson-pc:~$ lspci -v -s 06:00.006:00.0 VGA compatible controller: Advanced">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-08-21T11:04:06.658Z">
+<meta property="article:modified_time" content="2025-08-21T11:04:06.658Z">
+<meta property="article:author" content="dz">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://github.com/2025/08/21/%E6%9C%89%E5%85%B3%E5%9C%A83A5000%E4%B8%8A%E5%90%AF%E5%8A%A8android%E5%9B%BE%E5%BD%A2%E6%A0%88%E7%9A%84%E5%87%A0%E7%82%B9%E8%AF%B4%E6%98%8E/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://github.com/2025/08/21/%E6%9C%89%E5%85%B3%E5%9C%A83A5000%E4%B8%8A%E5%90%AF%E5%8A%A8android%E5%9B%BE%E5%BD%A2%E6%A0%88%E7%9A%84%E5%87%A0%E7%82%B9%E8%AF%B4%E6%98%8E/","path":"2025/08/21/有关在3A5000上启动android图形栈的几点说明/","title":"Android在3A5000上启动图形栈说明"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Android在3A5000上启动图形栈说明 | blog of dz</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">blog of dz</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E7%A1%AC%E4%BB%B6%E5%87%86%E5%A4%87"><span class="nav-number">1.</span> <span class="nav-text">1.硬件准备</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E7%A1%AC%E7%9B%98%E5%88%86%E5%8C%BA%E5%8F%8A%E7%9B%B8%E5%85%B3%E9%85%8D%E7%BD%AE%E8%AF%B4%E6%98%8E"><span class="nav-number">2.</span> <span class="nav-text">2.硬盘分区及相关配置说明</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E7%83%A7%E5%BD%95"><span class="nav-number">3.</span> <span class="nav-text">3.烧录</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-%E5%90%AF%E5%8A%A8%E5%8F%82%E6%95%B0"><span class="nav-number">4.</span> <span class="nav-text">4.启动参数</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">dz</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">17</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://github.com/2025/08/21/%E6%9C%89%E5%85%B3%E5%9C%A83A5000%E4%B8%8A%E5%90%AF%E5%8A%A8android%E5%9B%BE%E5%BD%A2%E6%A0%88%E7%9A%84%E5%87%A0%E7%82%B9%E8%AF%B4%E6%98%8E/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="dz">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="blog of dz">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Android在3A5000上启动图形栈说明 | blog of dz">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android在3A5000上启动图形栈说明
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-08-21 19:04:06" itemprop="dateCreated datePublished" datetime="2025-08-21T19:04:06+08:00">2025-08-21</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="1-硬件准备"><a href="#1-硬件准备" class="headerlink" title="1.硬件准备"></a>1.硬件准备</h1><p>3A5000测试机，Radeon 520OEM显卡,串口用于连接3A5000测试机以及工作机（串口软件minicom或者picocom），HDMI线连接显卡和显示器（VGA线暂时不支持）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">loongson@loongson-pc:~$ lspci -v -s 06:00.0</span><br><span class="line">06:00.0 VGA compatible controller: Advanced Micro Devices, Inc. [AMD/ATI] Oland [Radeon HD 8570 / R5 430 OEM / R7 240/340 / Radeon 520 OEM] (rev 87) (prog-if 00 [VGA controller])</span><br><span class="line">        Subsystem: Bitland(ShenZhen) Information Technology Co., Ltd. Radeon 520 OEM</span><br><span class="line">        Flags: bus master, fast devsel, latency 0, IRQ 48, NUMA node 0</span><br><span class="line">        Memory at e0030000000 (64-bit, prefetchable) [size=256M]</span><br><span class="line">        Memory at e0041000000 (64-bit, non-prefetchable) [size=256K]</span><br><span class="line">        I/O ports at 4000 [size=256]</span><br><span class="line">        Expansion ROM at e0041040000 [disabled] [size=128K]</span><br><span class="line">        Capabilities: &lt;access denied&gt;</span><br><span class="line">        Kernel driver in use: radeon</span><br><span class="line">        Kernel modules: radeon, amdgpu</span><br></pre></td></tr></table></figure>
+<h1 id="2-硬盘分区及相关配置说明"><a href="#2-硬盘分区及相关配置说明" class="headerlink" title="2.硬盘分区及相关配置说明"></a>2.硬盘分区及相关配置说明</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">loongson@loongson-pc:~$ sudo gdisk</span><br><span class="line">GPT fdisk (gdisk) version 1.0.3</span><br><span class="line"></span><br><span class="line">Type device filename, or press &lt;Enter&gt; to exit: /dev/sda</span><br><span class="line">Partition table scan:</span><br><span class="line">  MBR: protective</span><br><span class="line">  BSD: not present</span><br><span class="line">  APM: not present</span><br><span class="line">  GPT: present</span><br><span class="line"></span><br><span class="line">Found valid GPT with protective MBR; using GPT.</span><br><span class="line"></span><br><span class="line">Command (? for help): p</span><br><span class="line">Disk /dev/sda: 500118192 sectors, 238.5 GiB</span><br><span class="line">Model: YMTC SC001-256GB</span><br><span class="line">Sector size (logical/physical): 512/512 bytes</span><br><span class="line">Disk identifier (GUID): D647FC08-8976-4385-A183-BB1F67ACB5DA</span><br><span class="line">Partition table holds up to 128 entries</span><br><span class="line">Main partition table begins at sector 2 and ends at sector 33</span><br><span class="line">First usable sector is 34, last usable sector is 500118158</span><br><span class="line">Partitions will be aligned on 2-sector boundaries</span><br><span class="line">Total free space is 146565775 sectors (69.9 GiB)</span><br><span class="line"></span><br><span class="line">Number  Start (sector)    End (sector)  Size       Code  Name</span><br><span class="line">   1              34          616447   301.0 MiB   0700  </span><br><span class="line">   2          616448         1230847   300.0 MiB   8300  </span><br><span class="line">   3         1230848       282249215   134.0 GiB   8300  </span><br><span class="line">   4       282249216       315803647   16.0 GiB    8200  </span><br><span class="line">   5       315803648       336775167   10.0 GiB    8300  super</span><br><span class="line">   6       336775168       345163775   4.0 GiB     8300  data</span><br><span class="line">   7       345163776       349358079   2.0 GiB     8300  cache</span><br><span class="line">   8       349358080       351455231   1024.0 MiB  8300  metadata</span><br><span class="line">   9       351455232       353552383   1024.0 MiB  8300  boot</span><br></pre></td></tr></table></figure>
+<p>这里为了方便调试我采用的是双系统方案，硬盘分区格式是gpt格式，其中分区1-4是loongnix系统，分区5-8分别是安卓的super,data,cache,metadata分区，分区9用来放置内核和ramdisk等一些启动程序。<br>需要注意的是，goldfish中的fstab.ranchu的分区需要与上述分区一致,由下可见</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># Android fstab file.</span><br><span class="line">#&lt;dev&gt;  &lt;mnt_point&gt; &lt;type&gt;  &lt;mnt_flags options&gt; &lt;fs_mgr_flags&gt;</span><br><span class="line">system   /system     ext4    ro,barrier=1     wait,logical,first_stage_mount</span><br><span class="line">vendor   /vendor     ext4    ro,barrier=1     wait,logical,first_stage_mount</span><br><span class="line">/dev/block/sda6 /data     ext4      noatime,nosuid,nodev,nomblk_io_submit,errors=panic   wait,check,quota,fileencryption=aes-256-xts:aes-256-cts,reservedsize=128M,latemount</span><br><span class="line">/dev/block/sda7 /cache ext4      noatime,nosuid,nodev,nomblk_io_submit,errors=panic   wait,check,quota,fileencryption=aes-256-xts:aes-256-cts,reservedsize=128M,latemount</span><br><span class="line">/dev/block/sda8 /metadata    ext4    noatime,nosuid,nodev    wait,formattable,latemount</span><br><span class="line">/dev/block/vdb auto   auto      defaults    voldmanaged=sdcard:auto,encryptable=userdata</span><br><span class="line">/dev/block/zram0 none swap  defaults zramsize=75%</span><br></pre></td></tr></table></figure>
+<p>另外在goldfish的init.ranchu-core.sh中可以设置测试机的ip地址</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">/system/bin/ifconfig eth0 up  </span><br><span class="line">/system/bin/ifconfig eth0 192.168.2.2  </span><br><span class="line"> sleep 10  </span><br><span class="line">/system/bin/ip rule add from all lookup main pref 1                                                     </span><br></pre></td></tr></table></figure>
+<h1 id="3-烧录"><a href="#3-烧录" class="headerlink" title="3.烧录"></a>3.烧录</h1><p>编译完成后可以使用测试机中的loongnix系统下载源码并烧录<br>这里提供一下烧录脚本，用于从源码所在的服务器或者工作机上把镜像下载到本地并烧录到对应分区</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">#!/bin/bash</span><br><span class="line">server=172.17.103.55 </span><br><span class="line">password=****</span><br><span class="line">username=dongzhe</span><br><span class="line">remote_dir=/home/dongzhe/loongson/aosp.la/out/target/product/generic_loongarch64</span><br><span class="line">image_files=(</span><br><span class="line">        &quot;cache.img&quot;</span><br><span class="line">        &quot;userdata.img&quot;</span><br><span class="line">#        &quot;ramdisk.img&quot;</span><br><span class="line">        &quot;super.img&quot;</span><br><span class="line">#       &quot;vmlinuz.efi&quot;</span><br><span class="line">        )</span><br><span class="line">for file in &quot;$&#123;image_files[@]&#125;&quot;; do</span><br><span class="line">        sshpass -p &quot;$&#123;password&#125;&quot; scp  &quot;$&#123;username&#125;@$&#123;server&#125;:$&#123;remote_dir&#125;/$&#123;file&#125;&quot; ./</span><br><span class="line">        if [ $? -eq 0 ];then</span><br><span class="line">                echo &quot;copy successed: $&#123;file&#125;&quot;</span><br><span class="line">        else</span><br><span class="line">                echo &quot;copy failed: $&#123;file&#125;&quot;</span><br><span class="line">        fi</span><br><span class="line">done</span><br><span class="line"></span><br><span class="line">dd if=super.img of=/dev/sda5 bs=32M</span><br><span class="line">dd if=userdata.img of=/dev/sda6 bs=32M</span><br><span class="line">dd if=cache.img of=/dev/sda7 bs=32M</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h1 id="4-启动参数"><a href="#4-启动参数" class="headerlink" title="4.启动参数"></a>4.启动参数</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">menuentry &quot;android&quot;&#123;</span><br><span class="line">        linux (hd0,gpt9)/vmlinuz.efi console=ttyS0,115200 norandmaps earlycon enforcing=0 init=/init rw rootfstype=cpio androidboot.selinux=permissive androidboot.hardware=ranchu loglevel=1 androidboot.boot_devices=pci0000:00/0000:00:08.0 printk.devkmsg=on androidboot.verifiedbootstate=orange</span><br><span class="line">        boot</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>boot_devices需与sda所在的pci地址保持一致,采用双系统方案的话可以在装好的loongnix系统中查看硬盘pci地址。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">loongson@loongson-pc:/sys/block$ realpath sda</span><br><span class="line">/sys/devices/pci0000:00/0000:00:08.0/ata1/host0/target0:0:0/0:0:0:0/block/sda</span><br></pre></td></tr></table></figure>
+
+<p>内核可使用android_qemu_env下的vmlinuz.efi</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/08/21/%E7%B3%BB%E7%BB%9F%E7%BA%A7%E6%95%85%E9%9A%9C%E6%B3%A8%E5%85%A5%E5%B7%A5%E5%85%B7%E8%B0%83%E7%A0%94/" rel="prev" title="系统级故障注入工具调研">
+                  <i class="fa fa-angle-left"></i> 系统级故障注入工具调研
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/08/21/%E9%BE%99%E8%8A%AFopenstack%E5%8D%95%E8%8A%82%E7%82%B9%E9%83%A8%E7%BD%B2/" rel="next" title="龙芯openstack单节点部署">
+                  龙芯openstack单节点部署 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">dz</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>

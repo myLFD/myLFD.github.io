@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"github.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.24.1","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="ANDROID系统调研概要由于AOSP以及官方文档较多，除第一部分AOSP框架以外，现选取ART、Bionic以及JNI作为主要的调研对象。性能分析工具后续计划补充。 1.AOSP架构 其中，自上而下分别是： *Android Apps:*完全使用 Android API 开发的应用 Priviledged Apps:使用 Android 和系统 API 组合创建的应用，需要作为特权应用预安装在设">
+<meta property="og:type" content="article">
+<meta property="og:title" content="android系统调研">
+<meta property="og:url" content="http://github.com/2025/08/21/android%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%A0%94/index.html">
+<meta property="og:site_name" content="blog of dz">
+<meta property="og:description" content="ANDROID系统调研概要由于AOSP以及官方文档较多，除第一部分AOSP框架以外，现选取ART、Bionic以及JNI作为主要的调研对象。性能分析工具后续计划补充。 1.AOSP架构 其中，自上而下分别是： *Android Apps:*完全使用 Android API 开发的应用 Priviledged Apps:使用 Android 和系统 API 组合创建的应用，需要作为特权应用预安装在设">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://source.android.google.cn/static/images/android_stack.png?hl=zh-cn">
+<meta property="og:image" content="https://s2.ax1x.com/2019/05/31/VQviBn.png">
+<meta property="og:image" content="https://source.android.google.cn/docs/core/runtime/images/jit-arch.png?hl=zh-cn">
+<meta property="article:published_time" content="2025-08-21T11:04:06.652Z">
+<meta property="article:modified_time" content="2025-08-21T11:04:06.652Z">
+<meta property="article:author" content="dz">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://source.android.google.cn/static/images/android_stack.png?hl=zh-cn">
+
+
+<link rel="canonical" href="http://github.com/2025/08/21/android%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%A0%94/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://github.com/2025/08/21/android%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%A0%94/","path":"2025/08/21/android系统调研/","title":"android系统调研"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>android系统调研 | blog of dz</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">blog of dz</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#ANDROID%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%A0%94"><span class="nav-number">1.</span> <span class="nav-text">ANDROID系统调研</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A6%82%E8%A6%81"><span class="nav-number">1.0.0.1.</span> <span class="nav-text">概要</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-AOSP%E6%9E%B6%E6%9E%84"><span class="nav-number">1.1.</span> <span class="nav-text">1.AOSP架构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-ART"><span class="nav-number">1.2.</span> <span class="nav-text">2.ART</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-JVM%E3%80%81DVM%E5%88%86%E6%9E%90%E6%AF%94%E8%BE%83"><span class="nav-number">1.2.1.</span> <span class="nav-text">2.1 JVM、DVM分析比较</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-ART%E6%89%A7%E8%A1%8C%E6%96%B9%E5%BC%8F"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.2  ART执行方式</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">dz</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">17</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://github.com/2025/08/21/android%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%A0%94/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="dz">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="blog of dz">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="android系统调研 | blog of dz">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          android系统调研
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-08-21 19:04:06" itemprop="dateCreated datePublished" datetime="2025-08-21T19:04:06+08:00">2025-08-21</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="ANDROID系统调研"><a href="#ANDROID系统调研" class="headerlink" title="ANDROID系统调研"></a>ANDROID系统调研</h1><h4 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h4><p>由于AOSP以及官方文档较多，除第一部分AOSP框架以外，现选取ART、Bionic以及JNI作为主要的调研对象。性能分析工具后续计划补充。</p>
+<h2 id="1-AOSP架构"><a href="#1-AOSP架构" class="headerlink" title="1.AOSP架构"></a>1.AOSP架构</h2><p><img src="https://source.android.google.cn/static/images/android_stack.png?hl=zh-cn" alt="AOSP 软件堆栈架构。"></p>
+<p>其中，自上而下分别是：</p>
+<p>*Android Apps:*完全使用 Android API 开发的应用</p>
+<p>Priviledged Apps:使用 Android 和系统 API 组合创建的应用，需要作为特权应用预安装在设备上</p>
+<p>Device Manufacture Apps:结合使用 Android API、系统 API 并直接访问 Android 框架实现而创建的应用</p>
+<p>System API:系统 API 表示仅供合作伙伴和 OEM 纳入捆绑应用的 Android API</p>
+<p>Android API:Android API 是面向第三方 Android 应用开发者的公开 API</p>
+<p>Android Framework:构建应用所依据的一组 Java 类、接口和其他预编译代码。框架的某些部分可通过使用 Android API 公开访问。框架的其他部分只能由 OEM 通过系统 API 来访问。Android 框架代码在应用进程内运行。</p>
+<p>System Service:系统服务是重点突出的模块化组件，例如 <code>system_server</code>、SurfaceFlinger 和 MediaService。Android 框架 API 提供的功能可以与系统服务进行通信，以访问底层硬件。</p>
+<p>ART:AOSP 提供的 Java 运行时环境。 ART 会将应用的字节码转换为由设备运行时环境执行的处理器专有指令。</p>
+<p>Hardware abstration layer(HAL):HAL 是一个抽象层，其中包含硬件供应商要实现的标准接口</p>
+<p>Native daemons and libraries:该层中的原生守护程序包括 <code>init</code>、<code>healthd</code>、<code>logd</code> 和 <code>storaged</code>。这些守护程序直接与内核或其他接口进行交互，并且不依赖于基于用户空间的 HAL 实现。该层中的原生库包括 <code>libc</code>、<code>liblog</code>、<code>libutils</code>、<code>libbinder</code> 和 <code>libselinux</code>。这些原生库直接与内核或其他接口进行交互，并且不依赖于基于用户空间的 HAL 实现。</p>
+<p>Kernel:内核是任何操作系统的中心部分，并与设备上的底层硬件进行通信</p>
+<h2 id="2-ART"><a href="#2-ART" class="headerlink" title="2.ART"></a>2.ART</h2><p><strong>A</strong>ndroid <strong>R</strong>un<strong>t</strong>ime（ART）是安卓上一些应用和系统服务的运行环境。</p>
+<h3 id="2-1-JVM、DVM分析比较"><a href="#2-1-JVM、DVM分析比较" class="headerlink" title="2.1 JVM、DVM分析比较"></a>2.1 JVM、DVM分析比较</h3><p>ART的前身是Dalvik，传统的Dalvik其实就是一个java虚拟机。而google没有采用JVM不仅仅是因为版权的问题，DVM和JVM在技术细节上有许多不同之处。</p>
+<table>
+<thead>
+<tr>
+<th align="center">不同点</th>
+<th align="center">DVM</th>
+<th align="center">JVM</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">执行的字节码不同</td>
+<td align="center">DVM执行的是.dex格式文件</td>
+<td align="center">JVM执行的是.class文件</td>
+</tr>
+<tr>
+<td align="center">基于的架构不同</td>
+<td align="center">基于寄存器</td>
+<td align="center">基于虚拟栈</td>
+</tr>
+<tr>
+<td align="center">GC实现</td>
+<td align="center">单独申请一块空间，以位图的形式保存堆上的对象的标记</td>
+<td align="center">对象开头的地方留一小块空间</td>
+</tr>
+</tbody></table>
+<p><strong>执行的字节码不同</strong></p>
+<p>在Java SE程序中，Java类会被编译成一个或多个.class文件，打包成jar文件，然后JVM会通过相应的.class文件和jar文件获取相应的字节码。</p>
+<p>执行顺序为： .java -&gt; .class -&gt; .jar</p>
+<p>而DVM会用dx工具将所有的.class文件转换为一个.dex文件，然后DVM会从.dex文件读取指令和数据。</p>
+<p>执行顺序为： .java -&gt; .class -&gt; .dex</p>
+<p><img src="https://s2.ax1x.com/2019/05/31/VQviBn.png" alt="VQviBn.png"></p>
+<p>如图所示，.jar文件包含多个.class文件，每个.class文件包含了类的常量池、方法、属性等，因此JVM在加载jar文件的时候，会加载所有的.class文件，这种加载方式很慢，不适用于移动设备。</p>
+<p>而.dex文件将所有.class文件的信息整合在一起，并且通过去除.class文件中的冗余信息，减少了I&#x2F;O操作，提升了类的查找速度。</p>
+<p><strong>基于的架构不同</strong></p>
+<p>JVM基于栈则意味着需要去栈中读写数据，所需的指令会更多，这样会导致速度慢，对于性能有限的移动设备，显然不是很适合。</p>
+<p>DVM是基于寄存器的，它没有基于栈的虚拟机在拷贝数据而使用的大量的出入栈指令，同时指令更紧凑更简洁。但是由于显示指定了操作数，所以基于寄存器的指令会比基于栈的指令要大，但是由于指令数量的减少，总的代码数不会增加多少。</p>
+<h3 id="2-2-ART执行方式"><a href="#2-2-ART执行方式" class="headerlink" title="2.2  ART执行方式"></a>2.2  ART执行方式</h3><p><img src="https://source.android.google.cn/docs/core/runtime/images/jit-arch.png?hl=zh-cn" alt="JIT 架构"></p>
+<p>Android Runtime (ART) 包含一个具备代码分析功能的即时 (JIT) 编译器，该编译器可以在 Android  应用运行时持续提高其性能。JIT 编译器对 Android 运行组件当前的预先 (AOT)  编译器进行了补充，可以提升运行时性能，节省存储空间，加快应用和系统更新速度。相较于 AOT 编译器，JIT  编译器的优势也更为明显，因为在应用自动更新期间或在无线下载 (OTA) 更新期间重新编译应用时，它不会拖慢系统速度。</p>
+<p>尽管 JIT 和 AOT 使用相同的编译器，它们所进行的一系列优化也较为相似，但它们生成的代码可能会有所不同。JIT 会利用运行时类型信息，可以更高效地进行内联，并可让堆栈替换 (OSR) 编译成为可能，而这一切都会使其生成的代码略有不同。</p>
+<p>Android早期是aot的方式先编译成机器码，然后再运行的，这样会导致安装时间变长，后面的版本改成jit编译方式，在运行时编译，这样会导致运行速度较慢。android7.0之后的版本支持jit+oat的方式编译，支持app配置baseline-profile的方式设置热点代码。</p>
+<p>1.最初安装应用时不进行任何 AOT 编译。应用前几次运行时，系统会对其进行解译，并对经常执行的方法进行 JIT 编译。</p>
+<p>2.当设备闲置和充电时，编译守护程序会运行，以便根据在应用前几次运行期间生成的配置文件对常用代码进行 AOT 编译。</p>
+<p>3.下一次重新启动应用时将会使用配置文件引导型代码，并避免在运行时对已经过编译的方法进行 JIT 编译。在应用后续运行期间经过 JIT 编译的方法将会添加到配置文件中，然后编译守护程序将会对这些方法进行 AOT 编译。</p>
+<p>附：部分性能分析工具oprofile</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/08/21/git%E4%BD%BF%E7%94%A8%E5%87%A0%E5%88%99/" rel="prev" title="git使用几则">
+                  <i class="fa fa-angle-left"></i> git使用几则
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/08/21/android%E5%88%86%E5%8C%BA%E7%BB%93%E6%9E%84/" rel="next" title="Android分区结构">
+                  Android分区结构 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">dz</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>
